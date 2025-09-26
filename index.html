@@ -1,464 +1,358 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI HARUOMI（BETA）｜HARUOMILABO</title>
-    <!-- ファビコン設定 -->
-    <link rel="icon" type="image/png" href="AI%20HARUOMI.png">
-    <!-- OGP設定 -->
-    <meta property="og:title" content="AI HARUOMI（BETA）｜HARUOMILABO">
-    <meta property="og:description" content="HARUOMILABOのことをよく知っているAIがあなたの質問のお答えします！">
-    <meta property="og:image" content="AI%20HARUOMIロゴ-Photoroom.png"> <!-- ロゴ画像をOGPに使用 -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://yourdomain.com"> <!-- サイトのURLに置き換え -->
-    <!-- Twitterカード設定 -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="AI HARUOMI（BETA）｜HARUOMILABO">
-    <meta name="twitter:description" content="HARUOMILABOのことをよく知っているAIがあなたの質問のお答えします！">
-    <meta name="twitter:image" content="AI%20HARUOMIロゴ-Photoroom.png"> <!-- ロゴ画像をTwitterカードに使用 -->
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-        }
-        #chat-container {
-            background: #2d2d2d;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            height: 400px;
-            overflow-y: scroll;
-            margin-bottom: 10px;
-            border: 1px solid #404040;
-        }
-        .history-section {
-            background: #333;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid #555;
-        }
-        .history-title {
-            font-size: 1.1em;
-            color: #66b3ff;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .history-message {
-            margin: 5px 0;
-            padding: 8px;
-            background: #404040;
-            border-radius: 5px;
-            font-size: 0.9em;
-        }
-        .history-user {
-            text-align: right;
-            color: #007bff;
-        }
-        .history-bot {
-            text-align: left;
-            color: #e0e0e0;
-        }
-        .message {
-            margin: 10px 0;
-            padding: 12px;
-            border-radius: 8px;
-            word-wrap: break-word;
-        }
-        .user-message {
-            background: #007bff;
-            color: white;
-            text-align: right;
-            border-bottom-right-radius: 2px;
-        }
-        .bot-message {
-            background: #404040;
-            color: #e0e0e0;
-            border: 1px solid #555;
-            border-bottom-left-radius: 2px;
-        }
-        .official-link {
-            font-size: 0.9em;
-            color: white;
-            text-align: center;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #555;
-        }
-        .official-link a {
-            color: white;
-            text-decoration: none;
-        }
-        .official-link a:hover {
-            color: #cccccc;
-            text-decoration: underline;
-        }
-        #input-container {
-            display: flex;
-            background: #2d2d2d;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #404040;
-            margin-bottom: 10px;
-        }
-        #user-input {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: #3a3a3a;
-            color: #e0e0e0;
-            outline: none;
-        }
-        #user-input::placeholder {
-            color: #888;
-        }
-        #send-btn {
-            padding: 12px 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        #send-btn:hover {
-            background: #0056b3;
-        }
-        #clear-history {
-            display: block;
-            margin: 0 auto 20px;
-            padding: 10px 20px;
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        #clear-history:hover {
-            background: #ff5252;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .logo-image {
-            max-width: 300px;
-            height: auto;
-            margin: 0 auto;
-            display: block;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            border-radius: 8px;
-        }
-        .site-description {
-            background: #404040;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid #555;
-            text-align: center;
-            color: #e0e0e0;
-        }
-        .site-description h2 {
-            color: #66b3ff;
-            margin: 0 0 10px 0;
-            font-size: 1.3em;
-        }
-        .site-description p {
-            margin: 0;
-            font-size: 1em;
-            opacity: 0.9;
-        }
-        /* スクロールバー */
-        #chat-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        #chat-container::-webkit-scrollbar-track {
-            background: #2d2d2d;
-        }
-        #chat-container::-webkit-scrollbar-thumb {
-            background: #555;
-            border-radius: 4px;
-        }
-        #chat-container::-webkit-scrollbar-thumb:hover {
-            background: #666;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI HARUOMI｜HARUOMILABO</title>
+  <link rel="icon" type="image/png" href="https://static.wixstatic.com/media/3eb4b2_ee219c7f48d34f2fadd5589796c84049~mv2.png" />
+  <style>
+    html, body {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+      box-sizing: border-box;
+    }
+    body {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo-image {
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+      display: block;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+    }
+    #chat-container {
+      background: #2d2d2d;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      height: 400px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      border: 1px solid #404040;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .message {
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 8px;
+      word-wrap: break-word;
+    }
+    .user-message {
+      background: #007bff;
+      color: white;
+      text-align: right;
+      border-bottom-right-radius: 2px;
+    }
+    .bot-message {
+      background: #404040;
+      color: #e0e0e0;
+      border: 1px solid #555;
+      border-bottom-left-radius: 2px;
+    }
+    .official-link {
+      font-size: 0.9em;
+      color: white;
+      text-align: center;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #555;
+    }
+    .official-link a {
+      color: white;
+      text-decoration: none;
+    }
+    .official-link a:hover {
+      color: #cccccc;
+      text-decoration: underline;
+    }
+    #input-container {
+      display: flex;
+      background: #2d2d2d;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #404040;
+      margin-bottom: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #user-input {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: #3a3a3a;
+      color: #e0e0e0;
+      outline: none;
+      min-width: 0;
+    }
+    #user-input::placeholder {
+      color: #888;
+    }
+    #send-btn {
+      padding: 12px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #send-btn:hover {
+      background: #0056b3;
+    }
+    #clear-history {
+      padding: 10px 20px;
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-left: 10px;
+    }
+    #clear-history:hover {
+      background: #ff5252;
+    }
+    #save-history-toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    #save-history-toggle {
+      margin-right: 8px;
+    }
+    .history-section {
+      background: #333;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+      border: 1px solid #555;
+    }
+    .history-title {
+      font-size: 1.1em;
+      color: #66b3ff;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .history-message {
+      margin: 5px 0;
+      padding: 8px;
+      background: #404040;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+    .history-user {
+      text-align: right;
+      color: #007bff;
+    }
+    .history-bot {
+      text-align: left;
+      color: #e0e0e0;
+    }
+    #chat-container::-webkit-scrollbar {
+      width: 8px;
+    }
+    #chat-container::-webkit-scrollbar-track {
+      background: #2d2d2d;
+    }
+    #chat-container::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 4px;
+    }
+    #chat-container::-webkit-scrollbar-thumb:hover {
+      background: #666;
+    }
+    .terms-link {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.85em;
+    }
+    .terms-link a {
+      color: #cccccc;
+      text-decoration: none;
+    }
+    .terms-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <img src="AI%20HARUOMIロゴ-Photoroom.png" alt="AI HARUOMI Logo" class="logo-image">
-    </header>
+  <header>
+    <img src="https://static.wixstatic.com/media/3eb4b2_3bd41a6518f046cb934d548fb06fdf89~mv2.png" alt="AI HARUOMI Logo" class="logo-image">
+  </header>
 
-    <div class="site-description">
-        <h2>AI HARUOMI（BETA）｜HARUOMILABO</h2>
-        <p>HARUOMILABOのことをよく知っているAIがあなたの質問のお答えします！</p>
+  <div id="history-section" class="history-section" style="display: none;">
+    <div class="history-title">過去の会話履歴</div>
+    <div id="history-messages"></div>
+  </div>
+
+  <div id="chat-container">
+    <div class="message bot-message">
+      こんにちは 私はAI HARUOMI です！<br>
+      HARUOMILABOに関する質問などをしたのチャットから質問入力してください
     </div>
+  </div>
 
-    <div id="history-section" class="history-section" style="display: none;">
-        <div class="history-title">過去の会話履歴</div>
-        <div id="history-messages"></div>
-    </div>
+  <div id="input-container">
+    <input type="text" id="user-input" placeholder="メッセージを入力...">
+    <button id="send-btn">送信</button>
+  </div>
 
-    <div id="chat-container">
-        <div class="message bot-message">
-            こんにちは 私はAI HARUOMI です！<br>
-            HARUOMILABOに関する質問などをしたのチャットから質問お入力してください
-        </div>
-    </div>
-
-    <div id="input-container">
-        <input type="text" id="user-input" placeholder="メッセージを入力...">
-        <button id="send-btn">送信</button>
-    </div>
-
+  <div id="save-history-toggle-container">
+    <input type="checkbox" id="save-history-toggle">
+    <label for="save-history-toggle">履歴を保存する</label>
     <button id="clear-history">履歴をクリア</button>
+  </div>
 
-    <script>
-        const chatContainer = document.getElementById('chat-container');
-        const historySection = document.getElementById('history-section');
-        const historyMessages = document.getElementById('history-messages');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-        const clearHistoryBtn = document.getElementById('clear-history');
+  <div class="terms-link">
+    <a href="https://www.haruomilabo.com/_files/ugd/3eb4b2_a17da8e3b70640f3899ba7526efcb000.pdf" target="_blank">必ずお読みください｜利用規約</a>
+  </div>
 
-        const STORAGE_KEY = 'haruomiChatHistory';
+  <script>
+    const chatContainer = document.getElementById('chat-container');
+    const historySection = document.getElementById('history-section');
+    const historyMessages = document.getElementById('history-messages');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const clearHistoryBtn = document.getElementById('clear-history');
+    const saveHistoryToggle = document.getElementById('save-history-toggle');
 
-        // 多言語対応のキーワードマッチング（英語・日本語） - 各カテゴリに複数回答バリエーション
-        const responses = {
-            // 挨拶
-            'greeting': {
-                keywords: ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'greetings', 'howdy', 'hola', 'bonjour', 'こんにちは', 'こんばんは', 'おはよう', 'お元気ですか'],
-                variations: [
-                    'こんにちは！AI HARUOMI にHARUOMILABOに関する質問を聞いてみてください',
-                    'やっほー！AI HARUOMIです。HARUOMILABOについて何か知りたいことがありますか？',
-                    'こんにちは！HARUOMILABOの情報をAI HARUOMIがお答えします。どうぞお気軽に！',
-                    'Hello！AI HARUOMIです。HARUOMILABOに関する質問があればいつでもどうぞ！'
-                ]
-            },
-            
-            // HARUOMILABOについて
-            'haruomilabo': {
-                keywords: ['haruomilabo', 'what is haruomilabo', 'haruomi labo', 'about haruomilabo', 'haruomi lab', 'ハルオミラボ', 'ハルオミラボとは'],
-                variations: [
-                    'HARUOMILABOは内藤春臣が2024年に設立した団体です。2025年に1周年を迎えました。',
-                    'HARUOMILABOはクリエイティブな活動を行う団体で、2024年に内藤春臣が立ち上げました。今年で1周年です！',
-                    '2024年に設立されたHARUOMILABOは、内藤春臣が代表を務める団体です。2025年が1周年を迎える記念の年です。',
-                    'HARUOMILABOは内藤春臣による2024年設立の団体。今年1周年を迎え、様々な活動を展開しています。'
-                ]
-            },
-            
-            // 内藤春臣
-            'naito': {
-                keywords: ['内藤春臣', 'naito haruomi', 'haruomi naito', '代表者', 'leader', 'founder', 'who is naito', 'ナイトウ ハルオミ', '内藤さん'],
-                variations: [
-                    '内藤春臣（ナイトウ ハルオミ）はHARUOMILABOの代表者です。生年月日: 2014年12月8日。',
-                    'HARUOMILABOの代表、内藤春臣（ハルオミ）さんは2014年12月8日生まれの若きリーダーです。',
-                    '内藤春臣（ナイトウ ハルオミ）さんはHARUOMILABOの創設者で、2014年12月8日生まれです。',
-                    '代表者の内藤春臣（ハルオミ）さんは2014年12月8日生まれ。HARUOMILABOを率いる才能ある方です。'
-                ]
-            },
-            
-            // 公式情報
-            'official': {
-                keywords: ['公式', 'official', 'website', 'site', 'official site', 'ホームページ', '公式サイト', '公式情報'],
-                variations: [
-                    'HARUOMILABO公式情報をお届けします！最新情報は公式ホームページにてご確認ください。',
-                    '公式情報をご案内します！HARUOMILABOの最新情報は公式ウェブサイトでチェックできます。',
-                    'HARUOMILABOの公式情報をご提供します。詳細は公式ホームページをご覧ください。',
-                    '公式サイトでHARUOMILABOの最新情報をいつでも確認できますよ！'
-                ]
-            },
-            
-            // 1周年
-            'anniversary': {
-                keywords: ['1周年', 'anniversary', '1st anniversary', 'first year', '1年記念', '周年'],
-                variations: [
-                    'HARUOMILABOは2025年に1周年を迎えました！特設サイトで詳細をご覧いただけます。',
-                    '2025年、HARUOMILABOが1周年を迎えました！記念特設サイトも公開中です。',
-                    '今年はHARUOMILABOの1周年！特別な記念サイトで様々な情報をご紹介しています。',
-                    'HARUOMILABO、1周年おめでとうございます！特設サイトで記念イベントをチェック！'
-                ]
-            },
-            
-            // ロゴ
-            'logo': {
-                keywords: ['ロゴ', 'logo', 'mark', 'brand', 'logo download', 'ロゴダウンロード'],
-                variations: [
-                    'HARUOMILABOのロゴは公式サイトからダウンロード可能です。ご自由にお使いください。',
-                    '公式サイトからHARUOMILABOのロゴを無料でダウンロードできます！ぜひご活用ください。',
-                    'HARUOMILABOロゴは公式ウェブサイトで入手可能。自由に使っていただけます。',
-                    'ロゴが必要ですか？HARUOMILABOの公式サイトから簡単にダウンロードできますよ！'
-                ]
-            },
-            
-            // 恐竜ゲーム
-            'dinosaur': {
-                keywords: ['恐竜ゲーム', 'dinosaur game', 'dino game', 'game', 'halloween game', 'ハロウィンゲーム'],
-                variations: [
-                    'HARUOMILABO恐竜ゲームは大人気！2025年10月1日～10月31日はハロウィン仕様でお届けします。',
-                    '大人気のHARUOMILABO恐竜ゲームが10月はハロウィン仕様に！期間は10月1日～31日です。',
-                    '恐竜ゲームがハロウィン仕様に大変身！10月1日から31日まで楽しめます。',
-                    'HARUOMILABOの人気ゲームが10月はハロウィンテーマ！乞うご期待ください！'
-                ]
-            },
-            
-            // 最新情報
-            'latest': {
-                keywords: ['最新情報', 'latest', 'news', 'update', 'what\'s new', '最新'],
-                variations: [
-                    'HARUOMILABOの最新情報は公式ホームページにてお届けしています！',
-                    '最新ニュースはHARUOMILABO公式サイトでチェック！常に更新中です。',
-                    'HARUOMILABOの最新情報を公式ウェブサイトでご確認いただけます。',
-                    '今ホットなHARUOMILABO情報は公式HPで！最新トピックをチェック！'
-                ]
-            },
-            
-            // 設立
-            'founded': {
-                keywords: ['設立', 'founded', 'established', 'started', 'when founded', '設立年'],
-                variations: [
-                    'HARUOMILABOは2024年に内藤春臣によって設立されました。クリエイティブな活動を展開しています。',
-                    '2024年、内藤春臣によってHARUOMILABOが設立されました。様々なクリエイティブ活動を行っています。',
-                    '内藤春臣が2024年に立ち上げたHARUOMILABOは、創造性を重視した活動を続けています。',
-                    'HARUOMILABOは2024年設立。内藤春臣代表のもと、クリエイティブなプロジェクトを多数展開中です。'
-                ]
-            },
-            
-            // ハルオミ
-            'haruomi': {
-                keywords: ['ハルオミ', 'haruomi', 'ai haruomi', 'aiハルオミ', 'ai haruomi'],
-                variations: [
-                    'AI HARUOMIです！内藤春臣代表の活動をサポートするAIとして、HARUOMILABOの情報を提供しています。',
-                    'AI HARUOMIがお答えします！HARUOMILABOの情報提供で内藤春臣代表をサポート中です。',
-                    'こちらがAI HARUOMIです。HARUOMILABOの最新情報で皆さんをサポートします！',
-                    'AI HARUOMIです。内藤春臣代表のビジョンを広めるために、情報を分かりやすくお伝えします。'
-                ]
-            },
-            
-            // 終了
-            'bye': {
-                keywords: ['終了', 'bye', 'goodbye', 'see you', 'farewell', 'さようなら', 'バイバイ'],
-                variations: [
-                    'お話しできて楽しかったです！またHARUOMILABOでお会いしましょう！',
-                    '楽しいおしゃべりありがとう！またHARUOMILABOでお話ししましょうね！',
-                    'お話できて嬉しいです。またいつでもHARUOMILABOにお越しください！',
-                    'お別れの時間ですね。またHARUOMILABOで会えるのを楽しみにしています！'
-                ]
-            },
-            
-            // デフォルト
-            'default': {
-                keywords: [],
-                variations: [
-                    'HARUOMILABOに関する質問でしょうか？その質問にはお答えできません<br>もしくは<a href="https://www.haruomilabo.com" target="_blank">公式サイト</a>をご覧ください。',
-                    'その質問についてはお答えできませんが、HARUOMILABOの情報でしたらお答えできます！<br><a href="https://www.haruomilabo.com" target="_blank">公式サイト</a>もぜひチェックしてください。',
-                    'HARUOMILABOに関する具体的な質問でしたらお答えできます！<br>詳細は<a href="https://www.haruomilabo.com" target="_blank">公式ウェブサイト</a>でもご確認いただけます。',
-                    '申し訳ありませんが、その質問にはお答えできません。<br>HARUOMILABOの情報は<a href="https://www.haruomilabo.com" target="_blank">こちら</a>で！'
-                ]
-            }
-        };
+    const STORAGE_KEY = 'haruomiChatHistory';
 
-        // 履歴をlocalStorageからロードして表示
-        function loadHistory() {
-            const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            if (history.length > 0) {
-                historySection.style.display = 'block';
-                historyMessages.innerHTML = '';
-                history.forEach(entry => {
-                    const userDiv = document.createElement('div');
-                    userDiv.className = 'history-message history-user';
-                    userDiv.textContent = `あなた: ${entry.user}`;
-                    historyMessages.appendChild(userDiv);
+    const responses = {
+      greeting: {
+        keywords: ['こんにちは', 'こんばんは', 'おはよう'],
+        variations: ['こんにちは！HARUOMILABOについて何か知りたいことはありますか？']
+      },
+      haruomilabo: {
+        keywords: ['haruomilabo', 'ハルオミラボ'],
+        variations: ['HARUOMILABOは内藤春臣が2024年に設立した団体です。']
+      },
+      default: {
+        keywords: [],
+        variations: [
+          '申し訳ありませんが、その質問にはお答えできません。<br><a href="https://www.haruomilabo.com" target="_blank">公式サイト</a>をご覧ください。'
+        ]
+      }
+    };
 
-                    const botDiv = document.createElement('div');
-                    botDiv.className = 'history-message history-bot';
-                    botDiv.innerHTML = `AI HARUOMI: ${entry.bot}`;
-                    historyMessages.appendChild(botDiv);
-                });
-            }
+    function getRandomVariation(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function getBotResponse(input) {
+      const lowerInput = input.toLowerCase().trim();
+      for (const [category, data] of Object.entries(responses)) {
+        if (category === 'default') continue;
+        for (const keyword of data.keywords) {
+          if (lowerInput.includes(keyword.toLowerCase())) {
+            return getRandomVariation(data.variations);
+          }
         }
+      }
+      return getRandomVariation(responses['default'].variations);
+    }
 
-        // 履歴を保存
-        function saveToHistory(userMsg, botMsg) {
-            const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            history.push({ user: userMsg, bot: botMsg });
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-        }
+    function addMessage(text, isUser) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+      if (isUser) {
+        messageDiv.textContent = text;
+      } else {
+        const textWithLink = text + '<div class="official-link">公式HP：<a href="https://www.haruomilabo.com" target="_blank">https://www.haruomilabo.com</a></div>';
+        messageDiv.innerHTML = textWithLink;
+      }
+      chatContainer.appendChild(messageDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
 
-        // 履歴をクリア
-        function clearHistory() {
-            localStorage.removeItem(STORAGE_KEY);
-            historySection.style.display = 'none';
-            alert('履歴をクリアしました。');
-        }
+    function saveToHistory(userMsg, botMsg) {
+      if (!saveHistoryToggle.checked) return;
+      let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      history.push({ user: userMsg, bot: botMsg });
 
-        // ランダムな回答バリエーションを選択
-        function getRandomVariation(variations) {
-            const randomIndex = Math.floor(Math.random() * variations.length);
-            return variations[randomIndex];
-        }
+      // 最新3件に制限
+      if (history.length > 3) {
+        history = history.slice(-3);
+      }
 
-        function addMessage(text, isUser) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-            
-            if (isUser) {
-                messageDiv.textContent = text;
-            } else if (text === 'こんにちは 私はAI HARUOMI です！\nHARUOMILABOに関する質問などをしたのチャットから質問お入力してください') {
-                messageDiv.innerHTML = text.replace(/\n/g, '<br>');
-            } else {
-                const responseContent = text + '<div class="official-link">公式HP：<a href="https://www.haruomilabo.com" target="_blank">https://www.haruomilabo.com</a></div>';
-                messageDiv.innerHTML = responseContent;
-            }
-            
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+    }
 
-        function getBotResponse(input) {
-            const lowerInput = input.toLowerCase().trim();
-            
-            for (const [category, data] of Object.entries(responses)) {
-                if (category === 'default') continue;
-                
-                for (const keyword of data.keywords) {
-                    if (lowerInput.includes(keyword.toLowerCase()) || keyword.toLowerCase().includes(lowerInput)) {
-                        return getRandomVariation(data.variations);
-                    }
-                }
-            }
-            
-            return getRandomVariation(responses['default'].variations);
-        }
+    function loadHistory() {
+      const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      if (history.length > 0) {
+        const recentHistory = history.slice(-3); // 念のため制限
+        historySection.style.display = 'block';
+        historyMessages.innerHTML = '';
+        recentHistory.forEach(entry => {
+          const userDiv = document.createElement('div');
+          userDiv.className = 'history-message history-user';
+          userDiv.textContent = `あなた: ${entry.user}`;
+          historyMessages.appendChild(userDiv);
 
-        sendBtn.addEventListener('click', () => {
-            const input = userInput.value.trim();
-            if (input) {
-                addMessage(input, true);
-                const botResponse = getBotResponse(input);
-                setTimeout(() => {
-                    addMessage(botResponse, false);
-                    saveToHistory(input, botResponse);
-                }, 500);
-                userInput.value = '';
-            }
+          const botDiv = document.createElement('div');
+          botDiv.className = 'history-message history-bot';
+          botDiv.innerHTML = `AI HARUOMI: ${entry.bot}`;
+          historyMessages.appendChild(botDiv);
         });
+      }
+    }
 
-        userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendBtn.click();
-            }
-        });
+    function clearHistory() {
+      localStorage.removeItem(STORAGE_KEY);
+      historySection.style.display = 'none';
+      alert('履歴をクリアしました。');
+    }
 
-        clearHistoryBtn.addEventListener('click', clearHistory);
+    function saveCheckboxState() {
+      localStorage.setItem('saveHistoryChecked', saveHistoryToggle.checked);
+    }
 
-        // ページロード時に履歴を表示
-        loadHistory();
-    </script>
+    function loadCheckboxState() {
+      const savedState = localStorage.getItem('saveHistoryChecked');
+      saveHistoryToggle.checked = savedState !== null ? savedState === 'true' : true;
+    }
+
+    sendBtn.addEventListener('click', () => {
+      const input = userInput.value.trim();
+      if (input) {
+        addMessage(input, true);
+        const botResponse = getBotResponse(input);
+        setTimeout(() => {
+          addMessage(botResponse, false);
+          saveToHistory(input, botResponse);
+        }, 500);
+        userInput.value = '';
+      }
+    });
+
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendBtn.click();
+      }
+    });
+
+    clearHistoryBtn.addEventListener('click', clearHistory);
+    saveHistoryToggle.addEventListener('change', saveCheckboxState);
+
+    window.onload = () => {
+      loadCheckboxState();
+      loadHistory();
+    };
+  </script>
 </body>
 </html>
